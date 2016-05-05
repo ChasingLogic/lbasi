@@ -1,2 +1,4 @@
-pub mod token;
-pub mod interpreter;
+mod token;
+mod interpreter;
+
+pub use self::{ interpreter, token };
