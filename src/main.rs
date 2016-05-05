@@ -1,7 +1,8 @@
 mod interpreter;
+mod token;
 
 fn main() {
-    println!("{}", interpreter::token::Token{ kind: interpreter::token::TokenType::Integer, value: 6 });
-    println!("{}", interpreter::token::Token{ kind: interpreter::token::TokenType::Plus, value: "+" });
-    println!("{}", interpreter::token::Token{ kind: interpreter::token::TokenType::EOF, value: "EOF" })
+    println!("{}", token::Token::new("6".to_string()));
+    println!("{}", token::Token::new("+".to_string()));
+    println!("{}", token::Token::new("".to_string()))
 }
