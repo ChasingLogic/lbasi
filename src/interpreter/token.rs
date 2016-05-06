@@ -3,6 +3,7 @@ use std::fmt;
 #[derive(PartialEq)]
 pub enum TokenType {
     Integer,
+    Invalid,
     Plus,
     EOF
 }
@@ -10,9 +11,10 @@ pub enum TokenType {
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let typ = match *self {
-            TokenType::Integer => "Integer",
-            TokenType::Plus => "Plus",
-            TokenType::EOF => "EOF",
+            TokenType::Integer => "INTEGER",
+            TokenType::Invalid => "INVALID",
+            TokenType::Plus    => "PLUS",
+            TokenType::EOF     => "EOF",
         };
 
         write!(f, "{}", typ)
@@ -28,10 +30,10 @@ pub struct Token {
 impl Token {
     pub fn new(value: String) -> Token {
         match value.as_str() {
-            "+"   => Token{ kind: TokenType::Plus,    value: value },
-            ""    => Token{ kind: TokenType::EOF,     value: value },
-            "EOF" => Token{ kind: TokenType::EOF,     value: value },
-            _     => Token{ kind: TokenType::Integer, value: value},
+            "+"     => Token{ kind: TokenType::Plus,    value: value },
+            ""      => Token{ kind: TokenType::EOF,     value: value },
+            c if (c >= '0' && c <= '9') => Token{ kind: TokenType::Integer, value: value},
+            _       => Token{ kind: TokenType::Invalid, value: value},
         }
     }
 }
