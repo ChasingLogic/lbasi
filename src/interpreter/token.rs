@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[derive(PartialEq)]
 pub enum TokenType {
     Integer,
     Plus,
@@ -18,6 +19,7 @@ impl fmt::Display for TokenType {
     }
 }
 
+#[derive(PartialEq)]
 pub struct Token {
     pub kind: TokenType,
     pub value: String,
