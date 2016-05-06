@@ -1,5 +1,5 @@
 [package]
-name = "lets-build-an-interpreter"
+name = "lbasi"
 version = "0.1.0"
 authors = ["Mathew Robinson <mathew.robinson3114@gmail.com>"]
 
