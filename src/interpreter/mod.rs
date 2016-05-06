@@ -2,10 +2,11 @@ mod token;
 
 pub use self::token::{ Token, TokenType };
 
+#[derive(PartialEq, Debug)]
 pub struct Interpreter {
-    body: String,
-    numbers: &[String],
-    operators: &[String],
+    pos: usize,
+    numbers: Vec<String>,
+    operators: Vec<char>,
     current_token: Token,
 }
 
