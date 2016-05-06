@@ -30,23 +30,77 @@ pub struct Interpreter {
  * etc. This doesn't follow PEMDAS but I'm not worried about that right now.
  */
 impl Interpreter {
-    pub fn new(body: String) -> Interpreter {
-        Interpreter{ body: body, current_token: token::Token::new("") }
+    pub fn new() -> Interpreter {
+        Interpreter{ 
+            current_token: Token::new(' '),
+            operators: Vec::new(),
+            numbers: Vec::new(),
+            pos: 0,
+        }
+    }
+}
+
+pub fn run(body: String) -> Result<i32, String> {
+    let mut i = Interpreter::new();
+
+    for char in body.replace(" ", "").chars() {
+        let t = Token::new(char);
+
+        if t.kind == TokenType::Invalid {
+           return Err(format!("Invalid token: {}", t))
+        }
+
+        eat_token(&mut i, t);
     }
 
-    pub fn run() -> Result<i32, &'static str> {
-        for char in self.body.chars() {
-            let t = token::Token::new(char);
+    Ok(calculate(&mut i))
+}
 
-            if t.kind == token::TokenType::Invalid {
-               return Err(format!("Invalid token: {}", t))
+fn eat_token(intrptr: &mut Interpreter, t: Token) {
+    match t.kind {
+        ref x if *x == TokenType::Integer
+            && intrptr.current_token.kind == TokenType::Integer
+            => {
+                intrptr.numbers[intrptr.pos - 1].push_str(t.value.to_string().as_str());
             }
+        TokenType::Integer => {
+            intrptr.pos += 1;
+            intrptr.numbers.push(t.value.to_string());
+        },
+        _ => intrptr.operators.push(t.value),
+    };
 
-            self.eat_token(t);
+
+    intrptr.current_token = t;
+}
+
+fn calculate(intrptr: &mut Interpreter) -> i32 {
+    let mut result: i32 = 0;
+    let mut last_op = ' ';
+
+    loop {
+        let num = intrptr.numbers.pop()
+            .expect("Unable to pop number")
+            .parse::<i32>()
+            .expect("Unable to convert number to int");
+
+        let operator = match intrptr.operators.pop() {
+            Some(c) => c,
+            None    => last_op,
+        };
+            
+        match operator {
+            '+' => { 
+                result = result + num;
+                last_op = '+';
+            },
+            _   => unreachable!(),
+        };
+
+        if intrptr.numbers.len() == 0 {
+            break
         }
     }
 
-    fn eat_token(t: token::Token) {
-        
-    }
+    result
 }
