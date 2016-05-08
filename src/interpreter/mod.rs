@@ -43,14 +43,16 @@ impl Interpreter {
 pub fn run(body: String) -> Result<i32, String> {
     let mut i = Interpreter::new();
 
-    for char in body.replace(" ", "").chars() {
+    for char in body.chars() {
         let t = Token::new(char);
 
         if t.kind == TokenType::Invalid {
            return Err(format!("Invalid token: {}", t))
         }
 
-        eat_token(&mut i, t);
+        if t.kind != TokenType::Ignore {
+            eat_token(&mut i, t);
+        }
     }
 
     Ok(calculate(&mut i))

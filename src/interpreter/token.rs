@@ -4,6 +4,7 @@ use std::fmt;
 pub enum TokenType {
     Integer,
     Invalid,
+    Ignore,
     Plus,
     EOF
 }
@@ -13,6 +14,7 @@ impl fmt::Display for TokenType {
         let typ = match *self {
             TokenType::Integer => "INTEGER",
             TokenType::Invalid => "INVALID",
+            TokenType::Ignore  => "IGNORE",
             TokenType::Plus    => "PLUS",
             TokenType::EOF     => "EOF",
         };
@@ -24,15 +26,16 @@ impl fmt::Display for TokenType {
 #[derive(PartialEq, Debug)]
 pub struct Token {
     pub kind: TokenType,
-    pub value: char,
+    pub value: String,
 }
 
 impl Token {
-    pub fn new(value: char) -> Token {
+    pub fn new(value: String) -> Token {
         match value {
-            '+'     => Token{ kind: TokenType::Plus,    value: value },
-            'E'      => Token{ kind: TokenType::EOF,     value: value },
-            c if (c >= '0' && c <= '9') => Token{ kind: TokenType::Integer, value: value},
+            "+"     => Token{ kind: TokenType::Plus,    value: value },
+            "E"     => Token{ kind: TokenType::EOF,     value: value },
+            " "     => Token{ kind: TokenType::Ignore, value: value },
+            c if (c >= "0" && c <= "9") => Token{ kind: TokenType::Integer, value: value},
             _       => Token{ kind: TokenType::Invalid, value: value},
         }
     }
