@@ -9,41 +9,19 @@ fn test_token_creation() {
 }
 
 #[test]
-fn test_simple_subtraction() {
-    let answer = interpreter::run("5 - 3".to_string())
-        .expect("Got an error running interpreter");
-    
-    assert!(answer == 2, "answer = {}", answer)
+fn test_interpreter() {
+    interpreter_test("5 - 3".to_string(), 2);
+    interpreter_test("4 - 2 - 4".to_string(), -2);
+    interpreter_test("10 - 2 - 4".to_string(), 4);
+    interpreter_test("5 + 3".to_string(), 8);
+    interpreter_test("3 + 5 + 6 + 9".to_string(), 23);
+    interpreter_test("33 + 25 + 10".to_string(), 68);
+    interpreter_test("22 - 11 + 10 - 21".to_string(), 0);
 }
 
-#[test]
-fn test_complex_subtraction() {
-    let answer = interpreter::run("10 - 2 - 4".to_string())
+fn interpreter_test(expr: String, expected: i32) {
+    let answer = interpreter::run(expr)
         .expect("Got an error running interpreter");
     
-    assert!(answer == 4, "answer = {}", answer)
-}
-
-#[test]
-fn test_simple_addition() {
-    let answer = interpreter::run("3 + 5".to_string())
-        .expect("Got an error running interpreter");
-    
-    assert!(answer == 8, "answer = {}", answer)
-}
-
-#[test]
-fn test_complex_addition() {
-    let answer = interpreter::run("3 + 5 + 6 + 9".to_string())
-        .expect("Got an error running interpreter");
-    
-    assert!(answer == 23, "answer = {}", answer)
-}
-
-#[test]
-fn test_complex_numbers() {
-    let answer = interpreter::run("33 + 25 + 10".to_string())
-        .expect("Got an error running interpreter");
-    
-    assert!(answer == 68, "answer = {}", answer)
+    assert!(answer == expected, "expr = {} answer = {}", expr, answer)
 }
