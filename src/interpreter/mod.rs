@@ -6,7 +6,7 @@ pub use self::token::{ Token, TokenType };
 pub struct Interpreter {
     pos: usize,
     numbers: Vec<String>,
-    operators: Vec<char>,
+    operators: Vec<String>,
     current_token: Token,
 }
 
