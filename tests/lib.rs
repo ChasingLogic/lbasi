@@ -20,7 +20,7 @@ fn test_interpreter() {
 }
 
 fn interpreter_test(expr: String, expected: i32) {
-    let answer = interpreter::run(expr)
+    let answer = interpreter::run(expr.clone())
         .expect("Got an error running interpreter");
     
     assert!(answer == expected, "expr = {} answer = {}", expr, answer)
