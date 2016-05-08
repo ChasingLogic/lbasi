@@ -5,16 +5,18 @@ pub enum TokenType {
     Integer,
     Invalid,
     Ignore,
+    Subtract,
     Plus
 }
 
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let typ = match *self {
-            TokenType::Integer => "INTEGER",
-            TokenType::Invalid => "INVALID",
-            TokenType::Ignore  => "IGNORE",
-            TokenType::Plus    => "PLUS",
+            TokenType::Integer  => "INTEGER",
+            TokenType::Invalid  => "INVALID",
+            TokenType::Ignore   => "IGNORE",
+            TokenType::Plus     => "PLUS",
+            TokenType::Subtract => "Subtract",
         };
 
         write!(f, "{}", typ)
@@ -31,6 +33,7 @@ impl Token {
     pub fn new(value: char) -> Token {
         match value {
             '+'     => Token{ kind: TokenType::Plus,    value: value },
+            '-'     => Token{ kind: TokenType::Subtract,    value: value },
             ' '     => Token{ kind: TokenType::Ignore, value: value },
             c if (c >= '0' && c <= '9') => Token{ kind: TokenType::Integer, value: value},
             _       => Token{ kind: TokenType::Invalid, value: value},

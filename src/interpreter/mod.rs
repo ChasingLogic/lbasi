@@ -58,28 +58,34 @@ fn eat_token(intrptr: &mut Interpreter, t: Token) {
 }
 
 fn calculate(intrptr: &mut Interpreter) -> i32 {
-    let mut result: i32 = 0;
+    let mut iter = intrptr.numbers.iter();
+    let mut result = iter.next()
+        .expect("Unable to get first number")
+        .parse::<i32>()
+        .expect("Unable to convert number to int");
+
     let mut last_op = ' ';
 
-    loop {
-        let num = intrptr.numbers.pop()
-            .expect("Unable to pop number")
-            .parse::<i32>()
-            .expect("Unable to convert number to int");
+    println!("Initial result: {}", result);
 
-        let operator = match intrptr.operators.pop() {
-            Some(c) => c,
-            None    => last_op,
+    loop {
+        let num = match iter.next() {
+            Some(n) => n.parse::<i32>().expect("Unable to convert number to int"),
+            None    => break,
         };
             
+        let operator = intrptr.operators.pop()
+            .unwrap_or(last_op);
+            
         match operator {
-            '+' => { result = result + num; last_op = operator },
-             _  => unreachable!(),
+            '+' => result = result + num,
+            '-' => result = result - num,
+            _   => unreachable!(),
         };
 
-        if intrptr.numbers.len() == 0 {
-            break
-        }
+        last_op = operator;
+
+        println!("Result is now: {}", result);
     }
 
     result
