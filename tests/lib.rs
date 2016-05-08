@@ -3,9 +3,9 @@ use lbasi::*;
 
 #[test]
 fn test_token_creation() {
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Integer, value: "6" } == interpreter::Token::new("6"));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Plus, value: "+" }    == interpreter::Token::new("+"));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::EOF, value: "E" }      == interpreter::Token::new("E"));
+    assert!(interpreter::Token{ kind: interpreter::TokenType::Integer, value: '6' } == interpreter::Token::new('6'));
+    assert!(interpreter::Token{ kind: interpreter::TokenType::Plus, value: '+' }    == interpreter::Token::new('+'));
+    assert!(interpreter::Token{ kind: interpreter::TokenType::Ignore, value: ' ' }  == interpreter::Token::new(' '));
 }
 
 #[test]

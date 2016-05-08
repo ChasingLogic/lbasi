@@ -5,8 +5,7 @@ pub enum TokenType {
     Integer,
     Invalid,
     Ignore,
-    Plus,
-    EOF
+    Plus
 }
 
 impl fmt::Display for TokenType {
@@ -16,7 +15,6 @@ impl fmt::Display for TokenType {
             TokenType::Invalid => "INVALID",
             TokenType::Ignore  => "IGNORE",
             TokenType::Plus    => "PLUS",
-            TokenType::EOF     => "EOF",
         };
 
         write!(f, "{}", typ)
@@ -26,16 +24,15 @@ impl fmt::Display for TokenType {
 #[derive(PartialEq, Debug)]
 pub struct Token {
     pub kind: TokenType,
-    pub value: String,
+    pub value: char,
 }
 
 impl Token {
-    pub fn new(value: String) -> Token {
+    pub fn new(value: char) -> Token {
         match value {
-            "+"     => Token{ kind: TokenType::Plus,    value: value },
-            "E"     => Token{ kind: TokenType::EOF,     value: value },
-            " "     => Token{ kind: TokenType::Ignore, value: value },
-            c if (c >= "0" && c <= "9") => Token{ kind: TokenType::Integer, value: value},
+            '+'     => Token{ kind: TokenType::Plus,    value: value },
+            ' '     => Token{ kind: TokenType::Ignore, value: value },
+            c if (c >= '0' && c <= '9') => Token{ kind: TokenType::Integer, value: value},
             _       => Token{ kind: TokenType::Invalid, value: value},
         }
     }

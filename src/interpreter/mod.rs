@@ -6,7 +6,7 @@ pub use self::token::{ Token, TokenType };
 pub struct Interpreter {
     pos: usize,
     numbers: Vec<String>,
-    operators: Vec<String>,
+    operators: Vec<char>,
     current_token: Token,
 }
 
@@ -73,11 +73,8 @@ fn calculate(intrptr: &mut Interpreter) -> i32 {
         };
             
         match operator {
-            '+' => { 
-                result = result + num;
-                last_op = '+';
-            },
-            _   => unreachable!(),
+            '+' => { result = result + num; last_op = operator },
+             _  => unreachable!(),
         };
 
         if intrptr.numbers.len() == 0 {
