@@ -9,6 +9,22 @@ fn test_token_creation() {
 }
 
 #[test]
+fn test_simple_subtraction() {
+    let answer = interpreter::run("5 - 3".to_string())
+        .expect("Got an error running interpreter");
+    
+    assert!(answer == 2, "answer = {}", answer)
+}
+
+#[test]
+fn test_complex_subtraction() {
+    let answer = interpreter::run("10 - 2 - 4".to_string())
+        .expect("Got an error running interpreter");
+    
+    assert!(answer == 4, "answer = {}", answer)
+}
+
+#[test]
 fn test_simple_addition() {
     let answer = interpreter::run("3 + 5".to_string())
         .expect("Got an error running interpreter");
