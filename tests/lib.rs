@@ -5,7 +5,7 @@ use lbasi::*;
 fn test_token_creation() {
     assert!(interpreter::Token{ kind: interpreter::TokenType::Integer, value: '6' } == interpreter::Token::new('6'));
     assert!(interpreter::Token{ kind: interpreter::TokenType::Plus, value: '+' }    == interpreter::Token::new('+'));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Ignore, value: ' ' }  == interpreter::Token::new(' '));
+    assert!(interpreter::Token{ kind: interpreter::TokenType::Subtract, value: '-' }    == interpreter::Token::new('-'));
 }
 
 #[test]
@@ -17,6 +17,7 @@ fn test_interpreter() {
     interpreter_test("3 + 5 + 6 + 9".to_string(), 23);
     interpreter_test("33 + 25 + 10".to_string(), 68);
     interpreter_test("22 - 11 + 10 - 21".to_string(), 0);
+    interpreter_test("3 + 4 - 2".to_string(), 5);
 }
 
 fn interpreter_test(expr: String, expected: i32) {
