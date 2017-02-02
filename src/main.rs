@@ -9,7 +9,7 @@ fn main() {
     loop {
 
         print!("calc > ");
-        io::stdout().flush();
+        io::stdout().flush().unwrap();
 
         // read the user input
         let mut input = String::new();
