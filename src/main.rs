@@ -2,17 +2,28 @@ extern crate lbasi;
 
 use lbasi::*;
 
+use std::io;
+use std::io::Write;
+
 fn main() {
-    println!("Starting");
-    let answer = interpreter::run("33 + 25 + 10".to_string())
-        .expect("Got an error running interpreter");
+    loop {
 
-    println!("Answer for addition: {}", answer);
+        print!("calc > ");
+        io::stdout().flush();
 
-    let sub_answer = interpreter::run("10 - 2 - 4".to_string())
-        .expect("Got an error running interpreter");
+        // read the user input
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
 
-    println!("Answer for subtraction: {}", sub_answer);
 
-    println!("Stopping");
+        if input == "exit" || input == "quit" {
+            break;
+        }
+
+        let res = interpreter::run(input);
+        match res {
+            Ok(x) => println!("Answer: {}", x),
+            Err(e) => println!("Error: {}", e),
+        };
+    }
 }

@@ -1,6 +1,6 @@
 mod token;
 
-pub use self::token::{ Token, TokenType };
+pub use self::token::{Token, TokenType};
 
 #[derive(PartialEq, Debug)]
 pub struct Interpreter {
@@ -12,7 +12,7 @@ pub struct Interpreter {
 
 impl Interpreter {
     pub fn new() -> Interpreter {
-        Interpreter{ 
+        Interpreter {
             current_token: Token::new(' '),
             operators: Vec::new(),
             numbers: Vec::new(),
@@ -24,16 +24,20 @@ impl Interpreter {
 pub fn run(body: String) -> Result<i32, String> {
     let mut i = Interpreter::new();
 
-    for char in body.chars() {
-        let t = Token::new(char);
+    for car in body.chars() {
+
+        // skip whitespace
+        if " \n\t".contains(car) {
+            continue
+        }
+
+        let t = Token::new(car);
 
         if t.kind == TokenType::Invalid {
-           return Err(format!("Invalid token: {}", t))
+            return Err(format!("Invalid token: {}", t));
         }
 
-        if t.kind != TokenType::Ignore {
-            eat_token(&mut i, t);
-        }
+        eat_token(&mut i, t);
     }
 
     Ok(calculate(&mut i))
@@ -41,15 +45,13 @@ pub fn run(body: String) -> Result<i32, String> {
 
 fn eat_token(intrptr: &mut Interpreter, t: Token) {
     match t.kind {
-        ref x if *x == TokenType::Integer
-            && intrptr.current_token.kind == TokenType::Integer
-            => {
-                intrptr.numbers[intrptr.pos - 1].push_str(t.value.to_string().as_str());
-            }
+        ref x if *x == TokenType::Integer && intrptr.current_token.kind == TokenType::Integer => {
+            intrptr.numbers[intrptr.pos - 1].push_str(t.value.to_string().as_str());
+        }
         TokenType::Integer => {
             intrptr.pos += 1;
             intrptr.numbers.push(t.value.to_string());
-        },
+        }
         _ => intrptr.operators.push(t.value),
     };
 
@@ -71,16 +73,17 @@ fn calculate(intrptr: &mut Interpreter) -> i32 {
     loop {
         let num = match iter.next() {
             Some(n) => n.parse::<i32>().expect("Unable to convert number to int"),
-            None    => break,
+            None => break,
         };
-            
-        let operator = intrptr.operators.pop()
+
+        let operator = intrptr.operators
+            .pop()
             .unwrap_or(last_op);
-            
+
         match operator {
             '+' => result = result + num,
             '-' => result = result - num,
-            _   => unreachable!(),
+            _ => unreachable!(),
         };
 
         last_op = operator;
