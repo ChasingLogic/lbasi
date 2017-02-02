@@ -68,8 +68,6 @@ fn calculate(intrptr: &mut Interpreter) -> i32 {
 
     let mut last_op = ' ';
 
-    println!("Initial result: {}", result);
-
     loop {
         let num = match iter.next() {
             Some(n) => n.parse::<i32>().expect("Unable to convert number to int"),
@@ -87,8 +85,6 @@ fn calculate(intrptr: &mut Interpreter) -> i32 {
         };
 
         last_op = operator;
-
-        println!("Result is now: {}", result);
     }
 
     result
