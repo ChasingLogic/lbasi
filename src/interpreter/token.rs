@@ -1,59 +1,62 @@
 use std::fmt;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum TokenType {
     Integer,
-    Invalid,
     Subtract,
-    Plus,
+    Add,
+    Multiply,
+    Divide,
+    Invalid,
+    EOF,
 }
 
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let typ = match *self {
-            TokenType::Integer => "INTEGER",
-            TokenType::Invalid => "INVALID",
-            TokenType::Plus => "PLUS",
+            TokenType::Integer => "Integer",
+            TokenType::Add => "Add",
             TokenType::Subtract => "Subtract",
+            TokenType::Multiply => "Multiply",
+            TokenType::Divide => "Divide",
+            TokenType::Invalid => "Invalid",
+            TokenType::EOF => "EOF",
         };
 
         write!(f, "{}", typ)
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Token {
     pub kind: TokenType,
-    pub value: char,
+    pub value: String,
+}
+
+fn parse_token(value: char) -> TokenType {
+    match value {
+        '+' => TokenType::Add,
+        '-' => TokenType::Subtract,
+        '*' => TokenType::Multiply,
+        '/' => TokenType::Divide,
+        '0'...'9' => TokenType::Integer,
+        _ => TokenType::Invalid,
+    }
 }
 
 impl Token {
     pub fn new(value: char) -> Token {
-        match value {
-            '+' => {
-                Token {
-                    kind: TokenType::Plus,
-                    value: value,
-                }
-            }
-            '-' => {
-                Token {
-                    kind: TokenType::Subtract,
-                    value: value,
-                }
-            }
-            c if (c >= '0' && c <= '9') => {
-                Token {
-                    kind: TokenType::Integer,
-                    value: value,
-                }
-            }
-            _ => {
-                Token {
-                    kind: TokenType::Invalid,
-                    value: value,
-                }
-            }
+        Token {
+            kind: parse_token(value),
+            value: value.to_string(),
+        }
+    }
+
+
+    pub fn eof() -> Token {
+        Token {
+            kind: TokenType::EOF,
+            value: "".to_string(),
         }
     }
 }
