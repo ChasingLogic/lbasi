@@ -1,91 +1,112 @@
 mod token;
 
 pub use self::token::{Token, TokenType};
+use std::str;
 
-#[derive(PartialEq, Debug)]
-pub struct Interpreter {
+pub struct Interpreter<'a> {
     pos: usize,
-    numbers: Vec<String>,
-    operators: Vec<char>,
     current_token: Token,
+    body: String,
+    chars: str::Chars<'a>,
 }
 
-impl Interpreter {
-    pub fn new() -> Interpreter {
+impl<'a> Interpreter<'a> {
+    pub fn new(body: &'a String) -> Interpreter<'a> {
         Interpreter {
-            current_token: Token::new(' '),
-            operators: Vec::new(),
-            numbers: Vec::new(),
             pos: 0,
+            current_token: Token::new('\\'),
+            body: body.clone(),
+            chars: body.chars(),
+        }
+    }
+
+    fn error(&self) -> ! {
+        panic!("Error parsing input at character {} at {}",
+               self.current_token,
+               self.pos);
+    }
+
+    fn get_next_token(&mut self) -> Token {
+        let mut chr = self.chars.next();
+
+        if chr.is_none() {
+            return Token::eof();
+        }
+
+        while " \n\t".contains(chr.unwrap()) {
+            chr = self.chars.next();
+
+            if chr.is_none() {
+                return Token::eof();
+            }
+        }
+
+        self.pos += 1;
+
+        Token::new(chr.unwrap().clone())
+    }
+
+    fn eat_token(&mut self, t: TokenType) {
+        if self.current_token.kind == t {
+            let next_token = self.get_next_token();
+
+            if next_token.kind == self.current_token.kind &&
+               self.current_token.kind == TokenType::Integer {
+
+                // if it's an integer and the next token is an integer make a multi-digit integer
+                self.current_token
+                    .value
+                    .push_str(next_token.value.clone().as_str());
+            }
+
+            self.current_token = next_token.clone();
+            return;
+        }
+
+        self.error();
+    }
+
+    fn expr(&mut self) -> Result<i32, String> {
+        self.current_token = self.get_next_token();
+
+        while self.current_token.kind != TokenType::EOF {
+            let left = self.current_token.clone();
+            self.eat_token(TokenType::Integer);
+
+
+            let op = self.current_token.clone();
+            match op.kind {
+                TokenType::Add => self.eat_token(TokenType::Add),
+                TokenType::Subtract => self.eat_token(TokenType::Subtract),
+                TokenType::Multiply => self.eat_token(TokenType::Multiply),
+                TokenType::Divide => self.eat_token(TokenType::Divide),
+                _ => return Err(format!("Unrecognized operator: {}", op.value)),
+            };
+
+            let right = self.current_token.clone();
+            self.eat_token(TokenType::Integer);
+
+            match op.kind {
+                TokenType::Add => {
+                    Ok(left.value.parse::<i32>().unwrap() + right.value.parse::<i32>().unwrap())
+                }
+                TokenType::Subtract => {
+                    Ok(left.value.parse::<i32>().unwrap() - right.value.parse::<i32>().unwrap())
+                }
+                TokenType::Multiply => {
+                    Ok(left.value.parse::<i32>().unwrap() * right.value.parse::<i32>().unwrap())
+                }
+                TokenType::Divide => {
+                    Ok(left.value.parse::<i32>().unwrap() / right.value.parse::<i32>().unwrap())
+                }
+                _ => Err("Op not correct type!".to_string()),
+            }
         }
     }
 }
 
 pub fn run(body: String) -> Result<i32, String> {
-    let mut i = Interpreter::new();
+    let mut i = Interpreter::new(&body);
 
-    for car in body.chars() {
-
-        // skip whitespace
-        if " \n\t".contains(car) {
-            continue
-        }
-
-        let t = Token::new(car);
-
-        if t.kind == TokenType::Invalid {
-            return Err(format!("Invalid token: {}", t));
-        }
-
-        eat_token(&mut i, t);
-    }
-
-    Ok(calculate(&mut i))
-}
-
-fn eat_token(intrptr: &mut Interpreter, t: Token) {
-    match t.kind {
-        ref x if *x == TokenType::Integer && intrptr.current_token.kind == TokenType::Integer => {
-            intrptr.numbers[intrptr.pos - 1].push_str(t.value.to_string().as_str());
-        }
-        TokenType::Integer => {
-            intrptr.pos += 1;
-            intrptr.numbers.push(t.value.to_string());
-        }
-        _ => intrptr.operators.push(t.value),
-    };
-
-
-    intrptr.current_token = t;
-}
-
-fn calculate(intrptr: &mut Interpreter) -> i32 {
-    let mut iter = intrptr.numbers.iter();
-    let mut result = iter.next()
-        .expect("Unable to get first number")
-        .parse::<i32>()
-        .expect("Unable to convert number to int");
-
-    let mut last_op = ' ';
-
-    loop {
-        let num = match iter.next() {
-            Some(n) => n.parse::<i32>().expect("Unable to convert number to int"),
-            None => break,
-        };
-
-        let operator = intrptr.operators
-            .pop()
-            .unwrap_or(last_op);
-
-        match operator {
-            '+' => result = result + num,
-            '-' => result = result - num,
-            _ => unreachable!(),
-        };
-
-        last_op = operator;
-    }
-
-    result
+    i.expr()
 }
