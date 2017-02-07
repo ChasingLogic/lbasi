@@ -2,11 +2,13 @@ mod token;
 
 pub use self::token::{Token, TokenType};
 use std::str;
+use std::option::Option;
 
 pub struct Interpreter<'a> {
     pos: usize,
-    current_token: Token,
     body: String,
+    current_char: Option<char>,
+    current_token: Token,
     chars: str::Chars<'a>,
 }
 
@@ -14,8 +16,9 @@ impl<'a> Interpreter<'a> {
     pub fn new(body: &'a String) -> Interpreter<'a> {
         Interpreter {
             pos: 0,
-            current_token: Token::new('\\'),
             body: body.clone(),
+            current_char: None,
+            current_token: Token::new('\\'),
             chars: body.chars(),
         }
     }
@@ -26,24 +29,22 @@ impl<'a> Interpreter<'a> {
                self.pos);
     }
 
-    fn get_next_token(&mut self) -> Token {
-        let mut chr = self.chars.next();
-
-        if chr.is_none() {
-            return Token::eof();
-        }
-
-        while " \n\t".contains(chr.unwrap()) {
-            chr = self.chars.next();
-
-            if chr.is_none() {
-                return Token::eof();
-            }
-        }
-
+    fn advance(&mut self) {
         self.pos += 1;
+        self.current_char = self.chars.next();
+    }
 
-        Token::new(chr.unwrap().clone())
+    fn skip_whitespace(&mut self) {
+        while self.current_char.is_some() && " \n\t".contains(self.current_char.unwrap()) {
+            self.advance();
+        }
+    }
+
+    fn get_next_token(&mut self) {
+        while self.current_char.is_some() {
+            self.current_token = Token::new(self.current_char.unwrap().clone());
+        }
+
     }
 
     fn eat_token(&mut self, t: TokenType) {
