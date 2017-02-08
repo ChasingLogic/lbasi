@@ -18,13 +18,17 @@ impl<'a> Interpreter<'a> {
             pos: 0,
             body: body.clone(),
             current_char: None,
-            current_token: Token::new('\\'),
+            current_token: Token::eof(),
             chars: body.chars(),
         }
     }
 
+    fn current_char(&self) -> char {
+        self.current_char.unwrap()
+    }
+
     fn error(&self) -> ! {
-        panic!("Error parsing input at character {} at {}",
+        panic!("Error parsing input: character {} @ {}",
                self.current_token,
                self.pos);
     }
@@ -35,37 +39,57 @@ impl<'a> Interpreter<'a> {
     }
 
     fn skip_whitespace(&mut self) {
-        while self.current_char.is_some() && " \n\t".contains(self.current_char.unwrap()) {
+        while self.current_char.is_some() && is_whitespace(self.current_char()) {
             self.advance();
         }
     }
 
-    fn get_next_token(&mut self) {
-        while self.current_char.is_some() {
-            self.current_token = Token::new(self.current_char.unwrap().clone());
+    fn integer(&mut self) -> String {
+        let mut i = "".to_string();
+
+        while is_digit(self.current_char()) {
+            i.push(self.current_char());
+            self.advance();
         }
 
+        i
     }
 
-    fn eat_token(&mut self, t: TokenType) {
-        if self.current_token.kind == t {
-            let next_token = self.get_next_token();
-
-            if next_token.kind == self.current_token.kind &&
-               self.current_token.kind == TokenType::Integer {
-
-                // if it's an integer and the next token is an integer make a multi-digit integer
-                self.current_token
-                    .value
-                    .push_str(next_token.value.clone().as_str());
+    fn get_next_token(&mut self) -> Token {
+        while self.current_char.is_some() {
+            if is_whitespace(self.current_char()) {
+                self.skip_whitespace();
+                continue;
             }
 
-            self.current_token = next_token.clone();
+            if is_digit(self.current_char()) {
+                let t = Token {
+                    kind: TokenType::Integer,
+                    value: self.integer(),
+                };
+
+                self.advance();
+                return t;
+            }
+
+            let t = Token::op(self.current_char());
+            self.advance();
+            return t;
+        }
+
+        Token::eof()
+    }
+
+    fn eat(&mut self, t: TokenType) {
+        if self.current_token.kind == t {
+            self.current_token = self.get_next_token();
             return;
         }
 
         self.error();
     }
+
+    fn term(&self) -> i32 {}
 
     fn expr(&mut self) -> Result<i32, String> {
         self.current_token = self.get_next_token();
@@ -104,6 +128,14 @@ impl<'a> Interpreter<'a> {
             }
         }
     }
+}
+
+pub fn is_whitespace(c: char) -> bool {
+    " \n\t".contains(c)
+}
+
+pub fn is_digit(c: char) -> bool {
+    "0123456789".contains(c)
 }
 
 pub fn run(body: String) -> Result<i32, String> {
