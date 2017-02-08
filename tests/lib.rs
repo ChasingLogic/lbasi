@@ -2,12 +2,30 @@ extern crate lbasi;
 use lbasi::*;
 
 #[test]
-fn test_token_creation() {
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Integer, value: "6".to_string()} == interpreter::Token::new('6'));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Add, value: "+".to_string()}    == interpreter::Token::new('+'));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Subtract, value: "-".to_string()}    == interpreter::Token::new('-'));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Multiply, value: "*".to_string()}    == interpreter::Token::new('*'));
-    assert!(interpreter::Token{ kind: interpreter::TokenType::Divide, value: "/".to_string()}    == interpreter::Token::new('/'));
+fn test_operator_identification() {
+    assert_eq!(interpreter::Token {
+                   kind: interpreter::TokenType::Add,
+                   value: "+".to_string(),
+               },
+               interpreter::Token::new('+'));
+
+    assert_eq!(interpreter::Token {
+                   kind: interpreter::TokenType::Subtract,
+                   value: "-".to_string(),
+               },
+               interpreter::Token::new('-'));
+
+    assert_eq!(interpreter::Token {
+                   kind: interpreter::TokenType::Multiply,
+                   value: "*".to_string(),
+               },
+               interpreter::Token::new('*'));
+
+    assert_eq!(interpreter::Token {
+                   kind: interpreter::TokenType::Divide,
+                   value: "/".to_string(),
+               },
+               interpreter::Token::new('/'));
 }
 
 #[test]
@@ -30,5 +48,9 @@ fn interpreter_test(expr: &str, expected: i32) {
     let answer = interpreter::run(expr.to_string().clone())
         .expect("Got an error running interpreter");
 
-    assert!(answer == expected, "expr = {} answer = {}", expr, answer)
+    assert!(answer == expected,
+            "expr = {} answer = {} expected = {}",
+            expr,
+            answer,
+            expected)
 }
