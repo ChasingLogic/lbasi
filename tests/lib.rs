@@ -7,25 +7,25 @@ fn test_operator_identification() {
                    kind: interpreter::TokenType::Add,
                    value: "+".to_string(),
                },
-               interpreter::Token::new('+'));
+               interpreter::Token::op('+'));
 
     assert_eq!(interpreter::Token {
                    kind: interpreter::TokenType::Subtract,
                    value: "-".to_string(),
                },
-               interpreter::Token::new('-'));
+               interpreter::Token::op('-'));
 
     assert_eq!(interpreter::Token {
                    kind: interpreter::TokenType::Multiply,
                    value: "*".to_string(),
                },
-               interpreter::Token::new('*'));
+               interpreter::Token::op('*'));
 
     assert_eq!(interpreter::Token {
                    kind: interpreter::TokenType::Divide,
                    value: "/".to_string(),
                },
-               interpreter::Token::new('/'));
+               interpreter::Token::op('/'));
 }
 
 #[test]

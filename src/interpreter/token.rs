@@ -39,13 +39,12 @@ fn parse_token(value: char) -> TokenType {
         '-' => TokenType::Subtract,
         '*' => TokenType::Multiply,
         '/' => TokenType::Divide,
-        '0'...'9' => TokenType::Integer,
         _ => TokenType::Invalid,
     }
 }
 
 impl Token {
-    pub fn new(value: char) -> Token {
+    pub fn op(value: char) -> Token {
         Token {
             kind: parse_token(value),
             value: value.to_string(),
